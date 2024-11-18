@@ -1,18 +1,19 @@
 package Social;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Users {
 
-        private String userName;
-        private List following;
-        private List posts;
+    private String userName;
+    private List<Users> followers;
+    private List<Post> posts;
 
 
-    public Users(String userName, List following, List posts) {
+    public Users(String userName) {
         this.userName = userName;
-        this.following = following;
-        this.posts = posts;
+        this.followers = new ArrayList<>();
+        this.posts = new ArrayList<>();
     }
 
     public String getUserName() {
@@ -23,19 +24,19 @@ public class Users {
         this.userName = userName;
     }
 
-    public List getFollowing() {
-        return following;
+    public List<Users> getFollowers() {
+        return followers;
     }
 
-    public void setFollowing(List following) {
-        this.following = following;
+    public void addFollowers(Users users) {
+        followers.add(users);
     }
 
-    public List getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(List posts) {
-        this.posts = posts;
+    public void addPosts(Post post) {
+        posts.add(post);
     }
 }
