@@ -6,13 +6,15 @@ public class App {
 
     public static void main(String[] args) {
         initialUsers();
-        initialPosts();
+        //initialPosts();
         menuLog();
         menu();
     }
 
     private static Set<Users> usersSet = new HashSet<>();
     private static Map<Users, List<Post>> postList = new HashMap<>();
+    private static List<Comments> commentsList = new ArrayList<>();
+    private static Users currentUser = null;
 
 
     public static void initialUsers() {
@@ -25,30 +27,52 @@ public class App {
         usersSet.add(user3);
         usersSet.add(user4);
 
+    }
+
+//    public static void initialPosts() {
+//        Post post1 = new Post(new ArrayList<>(), new Date(), "Texto", "Brais");
+//        Post post2 = new Post(new ArrayList<>(), new Date(), "Imagen", "Brais");
+//        Post post3 = new Post(new ArrayList<>(), new Date(),"Video", "Manuel");
+//        Post post4 = new Post(new ArrayList<>(), new Date(), "Texto", "Manuel");
+//
+//        postList.get(user).add(post1);
+//        postList.get(user).add(post2);
+//        postList.get(user).add(post3);
+//        postList.get(user).add(post4);
+//
+//
+//       for (Users user : usersSet) {
+//           List<Post> userPosts = postList.get(user);
+//           if (userPosts == null) {
+//               userPosts = new ArrayList<>();
+//               postList.put(user, userPosts);
+//           }
+
+//           postList.get(user).add(post1);
+//           postList.get(user).add(post2);
+//           postList.get(user).add(post3);
+//           postList.get(user).add(post4);
+
+
+//        }
+//    }
+
+    public static void createPost() {
+        Post post = new Post(new ArrayList<>(),new Date(),"", "");
+        List<Post> userPosts = postList.get(currentUser);
+
+        if (userPosts == null){
+            userPosts = new ArrayList<>();
+            postList.put(currentUser, userPosts);
+        }
+        userPosts.add(post);
+        System.out.println(currentUser.getUserName() + " ha publicado un nuevo post.");
 
     }
 
-    public static void initialPosts() {
-        Post post1 = new Post(new ArrayList<>(), new Date());
-        Post post2 = new Post(new ArrayList<>(), new Date());
-        Post post3 = new Post(new ArrayList<>(), new Date());
-        Post post4 = new Post(new ArrayList<>(), new Date());
-
-
-        for (Users user : usersSet) {
-            if (user.getUserName().equals("Brais")) {
-                List<Post> userPosts = postList.get(user);
-                if (userPosts == null) {
-                    userPosts = new ArrayList<>();
-                    postList.put(user, userPosts); // Map usa el nombre del usuario como clave
-                }
-                postList.get(user).add(post1);
-                postList.get(user).add(post2);
-                postList.get(user).add(post3);
-                postList.get(user).add(post4);
-            }
-
-        }
+    public static void createComments() {
+        String comment = Utils.string("Introduce el comentario aqui: ");
+        Comments comments = new Comments(comment,new Date(), new Users("Brais","sda"));
     }
 
     public static void menuLog() {
@@ -88,7 +112,8 @@ public class App {
         }
 
         if (loggedInUser != null) {
-            System.out.println("Bienvenido, " + loggedInUser.getUserName() + "!");
+            currentUser = loggedInUser;
+            System.out.println("\n\n\n\n\n\n\n\nBienvenido, " + loggedInUser.getUserName() + "!\n");
             menu();
         } else {
             System.out.println("Nombre de usuario o contraseña incorrectos.");
@@ -132,12 +157,13 @@ public class App {
                     break;
 
                 case 2:
-                    showPosts(user);
+                    showAllPosts();
                     break;
 
                 case 3:
-
+                    createPost();
                     break;
+
                 case 4:
                     createUser();
                     break;
@@ -149,20 +175,40 @@ public class App {
         } while (input != 5);
     }
 
+
+
     public static void showUsers() {
         for (Users user : usersSet) {
             System.out.println("- " + user.getUserName());
         }
     }
 
-    public static void showPosts(Users user) {
-        List<Post> posts = postList.get(user);
+    public static void showAllPosts() {
+        for (Map.Entry<Users, List<Post>> entry : postList.entrySet()) {
+            Users user = entry.getKey();
+            List<Post> posts = entry.getValue();
+
+            if (posts == null || posts.isEmpty()) {
+                System.out.println(user.getUserName() + " no tiene ningún post todavía.");
+            } else {
+                System.out.println("Posts de " + user.getUserName() + ":");
+
+                for (int i = 0; i < posts.size(); i++) {
+                    Post post = posts.get(i);
+                    System.out.println("  Post " + (i + 1) + " publicado el " + post.getDate());
+                }
+
+            }
+        }
+    }
+
+    public static void showPosts() {
+        List<Post> posts = postList.get(currentUser);
 
         if (posts == null || posts.isEmpty()) {
-            System.out.println(user.getUserName() + " no tiene ningún post todavía.");
+            System.out.println(currentUser.getUserName() + " no tiene ningún post todavía.");
         } else {
-            System.out.println("Posts de " + user.getUserName() + ":");
-
+            System.out.println("Posts de " + currentUser.getUserName() + ":");
 
             for (int i = 0; i < posts.size(); i++) {
                 Post post = posts.get(i);
@@ -171,6 +217,8 @@ public class App {
 
         }
     }
+
+
 
     public static void createUser() {
         String newUser = Utils.string("Introduzca nombre de usuario: ");
@@ -216,7 +264,7 @@ public class App {
 
                 switch (input) {
                     case 1:
-                        showPosts(selectedUser);
+                        showPosts();
                         break;
 //                    case 2:
 //                        System.out.println("Mostrando información de " + users.getCode());
@@ -244,7 +292,7 @@ public class App {
                         userFound = true;
                         break;
                     default:
-                        System.out.printf("Opción no válida.");
+                        System.out.println("Opción no válida.");
 
 
                 }

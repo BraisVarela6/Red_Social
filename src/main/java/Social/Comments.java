@@ -6,9 +6,9 @@ public class Comments {
 
     private String comment;
     private Date date;
-    private String user;
+    private Users user;
 
-    public Comments(String comment, Date date, String user) {
+    public Comments(String comment, Date date, Users user) {
         this.comment = comment;
         this.date = date;
         this.user = user;
@@ -30,11 +30,7 @@ public class Comments {
         this.date = date;
     }
 
-    public String getUser() {
-        return user;
-    }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+
+
 }

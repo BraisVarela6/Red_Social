@@ -8,10 +8,15 @@ public class Post {
 
     private Date date;
     private List<Comments> comments;
+    private String type;
+    private String user;
 
-    public Post(List<Comments> comments, Date date) {
+
+    public Post(List<Comments> comments, Date date, String type, String user) {
         this.date = date;
         this.comments = new ArrayList<>();
+        this.type = type;
+        this.user = user;
     }
 
     public Date getDate() {
@@ -28,5 +33,21 @@ public class Post {
 
     public void addComments(Comments comment) {
         comments.add(comment);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }
