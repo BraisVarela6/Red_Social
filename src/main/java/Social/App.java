@@ -5,8 +5,7 @@ import java.util.*;
 public class App {
 
     public static void main(String[] args) {
-        initialUsers();
-        //initialPosts();
+        initial();
         menuLog();
         menu();
     }
@@ -17,7 +16,19 @@ public class App {
     private static Users currentUser = null;
 
 
-    public static void initialUsers() {
+//    public static void initialUsers() {
+//        Users user1 = new Users("Brais", "user1");
+//        Users user2 = new Users("Manuel", "user2");
+//        Users user3 = new Users("Laura", "user3");
+//        Users user4 = new Users("Pepe", "user4");
+//        usersSet.add(user1);
+//        usersSet.add(user2);
+//        usersSet.add(user3);
+//        usersSet.add(user4);
+//
+//    }
+
+    public static void initial() {
         Users user1 = new Users("Brais", "user1");
         Users user2 = new Users("Manuel", "user2");
         Users user3 = new Users("Laura", "user3");
@@ -27,53 +38,44 @@ public class App {
         usersSet.add(user3);
         usersSet.add(user4);
 
+        createList(user1);
+        createList(user2);
+        createList(user3);
+        createList(user4);
+
+        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
+        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
+        postList.get(user2).add(new Post(new ArrayList<>(),new Date(),"Texto"));
+        postList.get(user2).add(new Post(new ArrayList<>(),new Date(),"Texto"));
+        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
+
     }
 
-//    public static void initialPosts() {
-//        Post post1 = new Post(new ArrayList<>(), new Date(), "Texto", "Brais");
-//        Post post2 = new Post(new ArrayList<>(), new Date(), "Imagen", "Brais");
-//        Post post3 = new Post(new ArrayList<>(), new Date(),"Video", "Manuel");
-//        Post post4 = new Post(new ArrayList<>(), new Date(), "Texto", "Manuel");
-//
-//        postList.get(user).add(post1);
-//        postList.get(user).add(post2);
-//        postList.get(user).add(post3);
-//        postList.get(user).add(post4);
-//
-//
-//       for (Users user : usersSet) {
-//           List<Post> userPosts = postList.get(user);
-//           if (userPosts == null) {
-//               userPosts = new ArrayList<>();
-//               postList.put(user, userPosts);
-//           }
-
-//           postList.get(user).add(post1);
-//           postList.get(user).add(post2);
-//           postList.get(user).add(post3);
-//           postList.get(user).add(post4);
-
-
-//        }
-//    }
+    public static void createList(Users user) {
+        if (!postList.containsKey(user)) {
+            postList.put(user, new ArrayList<>());
+        }
+    }
 
     public static void createPost() {
-        Post post = new Post(new ArrayList<>(),new Date(),"", "");
+        String content = Utils.string("Introduzca el post: ");
+
+        Post newPost = new Post(new ArrayList<>(),new Date(),content);
         List<Post> userPosts = postList.get(currentUser);
 
-        if (userPosts == null){
-            userPosts = new ArrayList<>();
-            postList.put(currentUser, userPosts);
-        }
-        userPosts.add(post);
-        System.out.println(currentUser.getUserName() + " ha publicado un nuevo post.");
+        userPosts.add(newPost);
+        System.out.println(currentUser.getUserName() + " acaba de publicar un nuevo post: " + content);
 
     }
 
-    public static void createComments() {
-        String comment = Utils.string("Introduce el comentario aqui: ");
-        Comments comments = new Comments(comment,new Date(), new Users("Brais","sda"));
-    }
+//    public static void createComments() {
+//        int option;
+//        do {
+//
+//        } while ();
+//        String comment = Utils.string("Introduce el comentario aqui: ");
+//        Comments comments = new Comments(comment,new Date(), new Users("Brais","sda"));
+//    }
 
     public static void menuLog() {
         int option;
@@ -134,7 +136,8 @@ public class App {
                 String newPassword = Utils.string("Introduzca una contraseña: ");
                 Users newUser = new Users(newUserName, newPassword);
                 usersSet.add(newUser);
-                System.out.printf("El usuario " + newUserName + " ha sido creado. \n");
+                createList(newUser);
+                System.out.printf("El usuario " + newUserName + " ha sido creado con éxito. \n");
                 menu();
 
     }
@@ -175,6 +178,20 @@ public class App {
         } while (input != 5);
     }
 
+    public static void menuPosts() {
+        int option;
+        do {
+            System.out.println("\n1. Seleccionar post");
+            System.out.println("3. Salir al menú principal");
+            option = Utils.integer("\n Seleccione lo que quiere hacer: \n");
+            for (int i = 0; i < postList.size(); i++) {
+
+            }
+        } while (option !=3);
+    }
+
+
+
 
 
     public static void showUsers() {
@@ -184,22 +201,21 @@ public class App {
     }
 
     public static void showAllPosts() {
+        int counter = 1;
         for (Map.Entry<Users, List<Post>> entry : postList.entrySet()) {
             Users user = entry.getKey();
             List<Post> posts = entry.getValue();
 
-            if (posts == null || posts.isEmpty()) {
-                System.out.println(user.getUserName() + " no tiene ningún post todavía.");
-            } else {
+            if (posts != null && !posts.isEmpty()) {
                 System.out.println("Posts de " + user.getUserName() + ":");
 
-                for (int i = 0; i < posts.size(); i++) {
-                    Post post = posts.get(i);
-                    System.out.println("  Post " + (i + 1) + " publicado el " + post.getDate());
+                for (Post post : posts) {
+                    System.out.println("  Post " + counter + " publicado el " + post.getDate());
+                    counter++;
                 }
-
             }
         }
+        menuPosts();
     }
 
     public static void showPosts() {
@@ -272,7 +288,7 @@ public class App {
 //                        break;
                     case 3:
                         usersSet.remove(selectedUser);
-                        System.out.println("Dejando de seguir a: " + selectedUser);
+                        System.out.println("Dejando de seguir a: " + userName);
                         break;
                     case 4:
                         System.out.println("Saliendo al menú principal...");

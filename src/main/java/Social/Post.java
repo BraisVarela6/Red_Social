@@ -9,14 +9,13 @@ public class Post {
     private Date date;
     private List<Comments> comments;
     private String type;
-    private String user;
 
 
-    public Post(List<Comments> comments, Date date, String type, String user) {
+
+    public Post(List<Comments> comments, Date date, String type) {
         this.date = date;
         this.comments = new ArrayList<>();
         this.type = type;
-        this.user = user;
     }
 
     public Date getDate() {
@@ -43,11 +42,4 @@ public class Post {
         this.type = type;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
 }
