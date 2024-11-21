@@ -4,31 +4,12 @@ import java.util.*;
 
 public class App {
 
-    public static void main(String[] args) {
-        initial();
-        menuLog();
-        menu();
-    }
-
     private static Set<Users> usersSet = new HashSet<>();
-    private static Map<Users, List<Post>> postList = new HashMap<>();
-    private static List<Comments> commentsList = new ArrayList<>();
     private static Users currentUser = null;
 
 
-//    public static void initialUsers() {
-//        Users user1 = new Users("Brais", "user1");
-//        Users user2 = new Users("Manuel", "user2");
-//        Users user3 = new Users("Laura", "user3");
-//        Users user4 = new Users("Pepe", "user4");
-//        usersSet.add(user1);
-//        usersSet.add(user2);
-//        usersSet.add(user3);
-//        usersSet.add(user4);
-//
-//    }
-
     public static void initial() {
+
         Users user1 = new Users("Brais", "user1");
         Users user2 = new Users("Manuel", "user2");
         Users user3 = new Users("Laura", "user3");
@@ -38,33 +19,24 @@ public class App {
         usersSet.add(user3);
         usersSet.add(user4);
 
-        createList(user1);
-        createList(user2);
-        createList(user3);
-        createList(user4);
+        String type = Utils.string("Introduzca el tipo de post que quiere subir: ");
 
-        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
-        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
-        postList.get(user2).add(new Post(new ArrayList<>(),new Date(),"Texto"));
-        postList.get(user2).add(new Post(new ArrayList<>(),new Date(),"Texto"));
-        postList.get(user1).add(new Post(new ArrayList<>(),new Date(),"Texto"));
 
-    }
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,1));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,2));
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,3));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,4));
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,5));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,6));
 
-    public static void createList(Users user) {
-        if (!postList.containsKey(user)) {
-            postList.put(user, new ArrayList<>());
-        }
     }
 
     public static void createPost() {
         String content = Utils.string("Introduzca el post: ");
-
-        Post newPost = new Post(new ArrayList<>(),new Date(),content);
-        List<Post> userPosts = postList.get(currentUser);
-
-        userPosts.add(newPost);
-        System.out.println(currentUser.getUserName() + " acaba de publicar un nuevo post: " + content);
+        int postNumber = currentUser.getPosts().size()+1;
+        Post newPost = new Post(new ArrayList<>(),new Date(),content, postNumber);
+        currentUser.addPosts(newPost);
+        System.out.println("\nEl usuario '" + currentUser.getUserName() + "' acaba de publicar un nuevo post: " + content);
 
     }
 
@@ -136,8 +108,9 @@ public class App {
                 String newPassword = Utils.string("Introduzca una contraseña: ");
                 Users newUser = new Users(newUserName, newPassword);
                 usersSet.add(newUser);
-                createList(newUser);
-                System.out.printf("El usuario " + newUserName + " ha sido creado con éxito. \n");
+                currentUser = newUser;
+                System.out.printf("\nEl usuario '" + newUserName + "' ha sido creado con éxito.");
+                System.out.println("");
                 menu();
 
     }
@@ -146,11 +119,12 @@ public class App {
     public static void menu() {
         int input;
         do {
-            System.out.println("1. Explorar usuarios");
+            System.out.println("\n1. Explorar usuarios");
             System.out.println("2. Explorar posts");
             System.out.println("3. Publicar un post");
-            System.out.println("4. Crear usuario");
-            System.out.println("5. Salir de la aplicación");
+            System.out.println("4. Eliminar usuario");
+            System.out.println("5. Cerrar sesión");
+            System.out.println("6. Salir de la aplicación");
 
             input = Utils.integer("\nSelecciona lo que quieres hacer: \n");
 
@@ -160,7 +134,7 @@ public class App {
                     break;
 
                 case 2:
-                    showAllPosts();
+//                    showAllPosts();
                     break;
 
                 case 3:
@@ -168,7 +142,12 @@ public class App {
                     break;
 
                 case 4:
-                    createUser();
+                    //deleteUser();
+                    break;
+
+                case 5:
+                    System.out.println("Cerrando sesión... \n");
+                    menuLog();
                     break;
 
                 default:
@@ -182,11 +161,12 @@ public class App {
         int option;
         do {
             System.out.println("\n1. Seleccionar post");
+            System.out.println("2. Volver");
             System.out.println("3. Salir al menú principal");
             option = Utils.integer("\n Seleccione lo que quiere hacer: \n");
-            for (int i = 0; i < postList.size(); i++) {
-
-            }
+//            for (int i = 0; i < postList.size(); i++) {
+//
+//            }
         } while (option !=3);
     }
 
@@ -200,38 +180,41 @@ public class App {
         }
     }
 
-    public static void showAllPosts() {
-        int counter = 1;
-        for (Map.Entry<Users, List<Post>> entry : postList.entrySet()) {
-            Users user = entry.getKey();
-            List<Post> posts = entry.getValue();
+//    public static void showAllPosts() {
+//        int postNumber = 1;
+//        for (Map.Entry<Users, List<Post>> entry : postList.entrySet()) {
+//            Users user = entry.getKey();
+//            List<Post> posts = entry.getValue();
+//
+//            if (posts != null && !posts.isEmpty()) {
+//                System.out.println("Posts de " + user.getUserName() + ":");
+//
+//                for (Post post : posts) {
+//                    System.out.println("  Post " + postNumber + " publicado el " + post.getDate());
+//                    postNumber++;
+//                }
+//            }
+//        }
+//        menuPosts();
+//    }
 
-            if (posts != null && !posts.isEmpty()) {
+    public static void showPosts(Users user) {
+
+
+            if (user.getPosts().isEmpty() || user.getPosts() == null) {
+                System.out.println("\n" + user.getUserName() + " no tiene ningún post todavía.");
+                return;
+            }
                 System.out.println("Posts de " + user.getUserName() + ":");
 
-                for (Post post : posts) {
-                    System.out.println("  Post " + counter + " publicado el " + post.getDate());
-                    counter++;
+                for (Post post : user.getPosts()) {
+                    System.out.println("  Post " + (post.getPostNumber()) + " publicado el " + post.getDate() + ": ");
                 }
-            }
-        }
-        menuPosts();
-    }
 
-    public static void showPosts() {
-        List<Post> posts = postList.get(currentUser);
 
-        if (posts == null || posts.isEmpty()) {
-            System.out.println(currentUser.getUserName() + " no tiene ningún post todavía.");
-        } else {
-            System.out.println("Posts de " + currentUser.getUserName() + ":");
 
-            for (int i = 0; i < posts.size(); i++) {
-                Post post = posts.get(i);
-                System.out.println("  Post " + (i + 1) + " publicado el " + post.getDate());
-            }
 
-        }
+
     }
 
 
@@ -251,6 +234,74 @@ public class App {
         }
 
     }
+
+//    public static void selectPosts(Users selectedUser) {
+//        int input;
+//        int postNumber;
+//        boolean postFound = false;
+//        int exit;
+//        showPosts(selectedUser);
+//
+//
+//        while (!postFound) {
+//            postNumber = Utils.integer("Introduce el número de post que quieres seleccionar: ");
+//
+//            Post selectedPost = null;
+//            for (Post post : selectedUser.getPosts()) {
+//                if (post.getPostNumber() == postNumber) {
+//                    selectedPost = post;
+//                    break;
+//                }
+//            }
+//
+//
+//            if (selectedUser != null) {
+//                System.out.println("===================================");
+//
+//                System.out.println("1. Ver posts de este usuario:  \n2. Ver comentarios de este usuario:  \n3. Dejar de seguir \n4. Volver al menú principal");
+//
+//                input = Utils.integer("Selecciona lo que quieres hacer: ");
+//
+//                switch (input) {
+//                    case 1:
+//                        showPosts();
+//                        break;
+////                    case 2:
+////                        System.out.println("Mostrando información de " + users.getCode());
+////                        users.showContactDetails();
+////                        break;
+//                    case 3:
+//                        usersSet.remove(selectedUser);
+//                        System.out.println("Dejando de seguir a: " + postNumber);
+//                        break;
+//                    case 4:
+//                        System.out.println("Saliendo al menú principal...");
+//                        break;
+//
+//                }
+//
+//                postFound = true;
+//            } else {
+//                exit = Utils.integer("No es posible encontrar el contacto :(\n1. Intentarlo de nuevo" + "\n2. Cerrar sesión " + "\nSeleccione una opción: ");
+//                switch (exit) {
+//                    case 1:
+//                        System.out.println("Inténtelo de nuevo");
+//                        break;
+//                    case 2:
+//                        System.out.println("Cerrando sesión...");
+//                        menuLog();
+//                        postFound = true;
+//                        break;
+//                    default:
+//                        System.out.println("Opción no válida.");
+//
+//
+//                }
+//
+//            }
+//
+//        }
+//    }
 
     public static void selectUsers() {
         int input;
@@ -280,7 +331,7 @@ public class App {
 
                 switch (input) {
                     case 1:
-                        showPosts();
+                        showPosts(selectedUser);
                         break;
 //                    case 2:
 //                        System.out.println("Mostrando información de " + users.getCode());
@@ -298,13 +349,14 @@ public class App {
 
                 userFound = true;
             } else {
-                exit = Utils.integer("No es posible encontrar el contacto :(\n1. Intentarlo de nuevo" + "\n2. Salir al menú principal " + "\nSeleccione una opción: ");
+                exit = Utils.integer("No es posible encontrar el contacto :(\n1. Intentarlo de nuevo" + "\n2. Cerrar sesión " + "\nSeleccione una opción: ");
                 switch (exit) {
                     case 1:
                         System.out.println("Inténtelo de nuevo");
                         break;
                     case 2:
-                        System.out.println("Volviendo al menú principal...");
+                        System.out.println("Cerrando sesión...");
+                        menuLog();
                         userFound = true;
                         break;
                     default:

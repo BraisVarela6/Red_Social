@@ -9,13 +9,15 @@ public class Post {
     private Date date;
     private List<Comments> comments;
     private String type;
+    private int postNumber;
 
 
 
-    public Post(List<Comments> comments, Date date, String type) {
+    public Post(List<Comments> comments, Date date, String type, int postNumber) {
         this.date = date;
         this.comments = new ArrayList<>();
         this.type = type;
+        this.postNumber = postNumber;
     }
 
     public Date getDate() {
@@ -42,4 +44,11 @@ public class Post {
         this.type = type;
     }
 
+    public int getPostNumber() {
+        return postNumber;
+    }
+
+    public void setPostNumber(int postNumber) {
+        this.postNumber = postNumber;
+    }
 }
