@@ -1,11 +1,15 @@
 package Social;
 
+import jdk.jshell.execution.Util;
+
+import javax.sound.midi.Soundbank;
 import java.util.*;
 
 public class App {
 
     private static Set<Users> usersSet = new HashSet<>();
     private static Users currentUser = null;
+    private static Comments currentComment = null;
 
 
     public static void initial() {
@@ -19,25 +23,60 @@ public class App {
         usersSet.add(user3);
         usersSet.add(user4);
 
-        String type = Utils.string("Introduzca el tipo de post que quiere subir: ");
 
 
-        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,1));
-        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,2));
-        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,3));
-        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,4));
-        user1.addPosts(new Post(new ArrayList<>(),new Date(),type,5));
-        user2.addPosts(new Post(new ArrayList<>(),new Date(),type,6));
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",1));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",2));
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",3));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",4));
+        user1.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",5));
+        user2.addPosts(new Post(new ArrayList<>(),new Date(),"Texto",6));
 
     }
 
     public static void createPost() {
-        String content = Utils.string("Introduzca el post: ");
-        int postNumber = currentUser.getPosts().size()+1;
-        Post newPost = new Post(new ArrayList<>(),new Date(),content, postNumber);
-        currentUser.addPosts(newPost);
-        System.out.println("\nEl usuario '" + currentUser.getUserName() + "' acaba de publicar un nuevo post: " + content);
+        String text = "Texto";
+        String image = "Imagen";
+        String video = "Video";
 
+        System.out.println("1. TEXTO");
+        System.out.println("2. IMAGEN");
+        System.out.println("3. VIDEO");
+
+        int type = Utils.integer("Introduzca el tipo de post que quiere subir: ");
+        int postNumber = currentUser.getPosts().size()+1;
+
+
+        switch (type) {
+            case 1:
+                String content = Utils.string("Escriba el contenido: ");
+                PostText newPostText = new PostText(new ArrayList<>(),new Date(),text, postNumber, content);
+                currentUser.addPosts(newPostText);
+                System.out.println("\nEl usuario '" + currentUser.getUserName() + "' acaba de publicar un nuevo post de tipo texto: " + content);
+                break;
+            case 2:
+                String title = Utils.string("Introduzca un título: ");
+                int height = Utils.integer("Introduzca una altura: ");
+                int width = Utils.integer("Introduzca un ancho: ");
+                PostImage newPostImage = new PostImage (new ArrayList<>(),new Date(),image, postNumber, title, height, width);
+                currentUser.addPosts(newPostImage);
+                System.out.println("\nEl usuario '" + currentUser.getUserName() + "' acaba de publicar un nuevo post de tipo Imagen: " + type);
+                break;
+            case 3:
+                String titleVid = Utils.string("Introduzca un título: ");
+                String quality = Utils.string("Introduzca la calidad: ");
+                int duration = Utils.integer("Introduzca una duración: ");
+                PostVideo newPostVideo = new PostVideo(new ArrayList<>(),new Date(),video, postNumber, titleVid, quality, duration);
+                currentUser.addPosts(newPostVideo);
+                System.out.println("\nEl usuario '" + currentUser.getUserName() + "' acaba de publicar un nuevo post de tipo Video: " + type);
+                break;
+        }
+    }
+
+    public static void createComment(Post selectedPost) {
+        String comment = Utils.string("Introduzca el comentario: ");
+        Comments newComments = new Comments(comment, new Date(), currentUser);
+        selectedPost.addComments(newComments);
     }
 
 //    public static void createComments() {
@@ -91,6 +130,7 @@ public class App {
             menu();
         } else {
             System.out.println("Nombre de usuario o contraseña incorrectos.");
+            logIn();
         }
     }
 
@@ -122,8 +162,8 @@ public class App {
             System.out.println("\n1. Explorar usuarios");
             System.out.println("2. Explorar posts");
             System.out.println("3. Publicar un post");
-            System.out.println("4. Eliminar usuario");
-            System.out.println("5. Cerrar sesión");
+            System.out.println("4. Cerrar sesión");
+            System.out.println("5. Eliminar cuenta");
             System.out.println("6. Salir de la aplicación");
 
             input = Utils.integer("\nSelecciona lo que quieres hacer: \n");
@@ -142,16 +182,18 @@ public class App {
                     break;
 
                 case 4:
-                    //deleteUser();
+                    System.out.println("Cerrando sesión... \n");
+                    menuLog();
                     break;
 
                 case 5:
-                    System.out.println("Cerrando sesión... \n");
+                    deleteAccount();
                     menuLog();
                     break;
 
                 default:
                     System.out.println("Saliendo de la aplicación... \n");
+                    System.exit(0);
                     break;
             }
         } while (input != 5);
@@ -211,9 +253,20 @@ public class App {
                     System.out.println("  Post " + (post.getPostNumber()) + " publicado el " + post.getDate() + ": ");
                 }
 
+    }
+
+    public static void showComments(Post post, Users user) {
 
 
+        if (post.getComments().isEmpty() || post.getComments() == null) {
+            System.out.println("\nEl post " + post.getPostNumber() + " no tiene ningún comentario todavía.");
+            return;
+        }
+        System.out.println("Comentarios del post " + post.getComments() + ":");
 
+        for (Comments comments : post.getComments()) {
+            System.out.println(comments.getComment() + " " + post.getDate() + " de:" + user.getUserName());
+        }
 
     }
 
@@ -232,76 +285,81 @@ public class App {
                 System.out.printf("El usuario " + newUser + " ha sido creado. \n");
             }
         }
-
     }
 
-//    public static void selectPosts(Users selectedUser) {
-//        int input;
-//        int postNumber;
-//        boolean postFound = false;
-//        int exit;
-//        showPosts(selectedUser);
-//
-//
-//        while (!postFound) {
-//            postNumber = Utils.integer("Introduce el número de post que quieres seleccionar: ");
-//
-//            Post selectedPost = null;
-//            for (Post post : selectedUser.getPosts()) {
-//                if (post.getPostNumber() == postNumber) {
-//                    selectedPost = post;
-//                    break;
-//                }
-//            }
-//
-//
-//            if (selectedUser != null) {
-//                System.out.println("===================================");
-//
-//                System.out.println("1. Ver posts de este usuario:  \n2. Ver comentarios de este usuario:  \n3. Dejar de seguir \n4. Volver al menú principal");
-//
-//                input = Utils.integer("Selecciona lo que quieres hacer: ");
-//
-//                switch (input) {
-//                    case 1:
-//                        showPosts();
-//                        break;
-////                    case 2:
-////                        System.out.println("Mostrando información de " + users.getCode());
-////                        users.showContactDetails();
-////                        break;
-//                    case 3:
-//                        usersSet.remove(selectedUser);
-//                        System.out.println("Dejando de seguir a: " + postNumber);
-//                        break;
-//                    case 4:
-//                        System.out.println("Saliendo al menú principal...");
-//                        break;
-//
-//                }
-//
-//                postFound = true;
-//            } else {
-//                exit = Utils.integer("No es posible encontrar el contacto :(\n1. Intentarlo de nuevo" + "\n2. Cerrar sesión " + "\nSeleccione una opción: ");
-//                switch (exit) {
-//                    case 1:
-//                        System.out.println("Inténtelo de nuevo");
-//                        break;
-//                    case 2:
-//                        System.out.println("Cerrando sesión...");
-//                        menuLog();
-//                        postFound = true;
-//                        break;
-//                    default:
-//                        System.out.println("Opción no válida.");
-//
-//
-//                }
-//
-//            }
-//
-//        }
-//    }
+    public static void deleteAccount() {
+        usersSet.remove(currentUser);
+        System.out.println("Eliminando su cuenta...");
+        System.out.println("Cuenta eliminada");
+    }
+
+    public static void selectPosts(Users selectedUser) {
+        showPosts(selectedUser);
+        int input;
+        int postNumber;
+        boolean postFound = false;
+        int exit;
+
+
+
+        while (!postFound) {
+            postNumber = Utils.integer("Introduce el número de post que quieres seleccionar: ");
+
+            Post selectedPost = null;
+            for (Post post : selectedUser.getPosts()) {
+                if (post.getPostNumber() == postNumber) {
+                    selectedPost = post;
+                    break;
+                }
+            }
+
+
+            if (selectedPost != null) {
+                System.out.println("===================================");
+
+                System.out.println("1. Comentar en este post.  \n2. Ver los comentarios de este post.  \n3. Eliminar post. \n4. Volver al menú principal");
+
+                input = Utils.integer("Selecciona lo que quieres hacer: ");
+
+                switch (input) {
+                    case 1:
+                        createComment(selectedPost);
+                        break;
+                    case 2:
+                        showComments(selectedPost, selectedUser);
+                        break;
+                    case 3:
+                        usersSet.remove(selectedUser);
+                        System.out.println("Dejando de seguir a: " + postNumber);
+                        break;
+                    case 4:
+                        System.out.println("Saliendo al menú principal...");
+                        break;
+
+                }
+
+                postFound = true;
+            } else {
+                exit = Utils.integer("No es posible encontrar el contacto :(\n1. Intentarlo de nuevo" + "\n2. Cerrar sesión " + "\nSeleccione una opción: ");
+                switch (exit) {
+                    case 1:
+                        System.out.println("Inténtelo de nuevo");
+                        break;
+                    case 2:
+                        System.out.println("Cerrando sesión...");
+                        menuLog();
+                        postFound = true;
+                        break;
+                    default:
+                        System.out.println("Opción no válida.");
+
+
+                }
+
+            }
+
+        }
+    }
 
     public static void selectUsers() {
         int input;
@@ -325,13 +383,14 @@ public class App {
             if (selectedUser != null) {
                 System.out.println("===================================");
 
-                System.out.println("1. Ver posts de este usuario:  \n2. Ver comentarios de este usuario:  \n3. Dejar de seguir \n4. Volver al menú principal");
+                System.out.println("1. Ver posts de este usuario:  \n2. Ver comentarios de este usuario:  \n3. Dejar de seguir \n4. Eliminar usuario \n5. Volver al menú principal");
 
                 input = Utils.integer("Selecciona lo que quieres hacer: ");
 
                 switch (input) {
                     case 1:
-                        showPosts(selectedUser);
+                        selectPosts(selectedUser);
+//                        showPosts(selectedUser);
                         break;
 //                    case 2:
 //                        System.out.println("Mostrando información de " + users.getCode());
@@ -341,7 +400,12 @@ public class App {
                         usersSet.remove(selectedUser);
                         System.out.println("Dejando de seguir a: " + userName);
                         break;
-                    case 4:
+                        case 4:
+                            usersSet.remove(selectedUser);
+                            System.out.println("Eliminando a:" + userName);
+                            System.out.println("El usuario " + userName + " ha sido eliminado");
+                            break;
+                    case 5:
                         System.out.println("Saliendo al menú principal...");
                         break;
 
