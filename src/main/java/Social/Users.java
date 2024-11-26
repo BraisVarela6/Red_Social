@@ -43,6 +43,10 @@ public class Users {
         followers.add(users);
     }
 
+    public void removeFollowers(Users users) {
+        followers.remove(users);
+    }
+
     public List<Post> getPosts() {
         return posts;
     }

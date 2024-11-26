@@ -7,11 +7,13 @@ public class Comments {
     private String comment;
     private Date date;
     private Users user;
+    private int commentNumber;
 
-    public Comments(String comment, Date date, Users user) {
+    public Comments(String comment, Date date, Users user, int commentNumber) {
         this.comment = comment;
         this.date = date;
         this.user = user;
+        this.commentNumber = commentNumber;
     }
 
     public String getComment() {
@@ -30,7 +32,19 @@ public class Comments {
         this.date = date;
     }
 
+    public int getCommentNumber() {
+        return commentNumber;
+    }
 
+    public void setCommentNumber(int commentNumber) {
+        this.commentNumber = commentNumber;
+    }
 
+    public Users getUser() {
+        return user;
+    }
 
+    public void setUser(Users user) {
+        this.user = user;
+    }
 }
